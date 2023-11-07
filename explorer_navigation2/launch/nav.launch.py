@@ -27,18 +27,21 @@ def generate_launch_description():
     # Get the launch directory
     nav_dir = get_package_share_directory('explorer_navigation2')
 
-    namespace = LaunchConfiguration('namespace')
-    use_sim_time = LaunchConfiguration('use_sim_time')
-    autostart = LaunchConfiguration('autostart')
-    params_file = LaunchConfiguration('params_file')
-    default_bt_xml_filename = LaunchConfiguration('default_bt_xml_filename')
-    map_subscribe_transient_local = LaunchConfiguration('map_subscribe_transient_local')
+    namespace = LaunchConfiguration('namespace', default='')
+    use_sim_time = LaunchConfiguration('use_sim_time', default='true')
+    autostart = LaunchConfiguration('autostart', default='true')
+    params_file = LaunchConfiguration('params_file', default=os.path.join(nav_dir, 'param', 'burger.yaml'))
+
+    default_bt_xml_filename = LaunchConfiguration('default_bt_xml_filename',default=os.path.join(
+                nav_dir,
+                'behavior_trees', 'navigate_w_replanning_and_recovery.xml'))
+    map_subscribe_transient_local = LaunchConfiguration('map_subscribe_transient_local', default='false')
 
     lifecycle_nodes = ['controller_server',
                        'planner_server',
                        'recoveries_server',
                        'bt_navigator',
-                       'waypoint_follower']
+                       'waypoint_follower'] 
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
@@ -71,7 +74,7 @@ def generate_launch_description():
             description='Top-level namespace'),
 
         DeclareLaunchArgument(
-            'use_sim_time', default_value='True',
+            'use_sim_time', default_value='true',
             description='Use simulation (Gazebo) clock if true'),
 
         DeclareLaunchArgument(
@@ -93,7 +96,7 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'map_subscribe_transient_local', default_value='false',
             description='Whether to set the map subscriber QoS to transient local'),
-
+        
         Node(
             package='nav2_controller',
             executable='controller_server',
@@ -110,9 +113,9 @@ def generate_launch_description():
             remappings=remappings),
 
         Node(
-            package='nav2_recoveries',
-            executable='recoveries_server',
-            name='recoveries_server',
+            package='nav2_behaviors',
+            executable='behavior_server',
+            name='behavior_server',
             output='screen',
             parameters=[configured_params],
             remappings=remappings),
@@ -141,5 +144,4 @@ def generate_launch_description():
             parameters=[{'use_sim_time': use_sim_time},
                         {'autostart': autostart},
                         {'node_names': lifecycle_nodes}]),
-
     ])
