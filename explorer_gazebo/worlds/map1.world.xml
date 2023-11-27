@@ -43,13 +43,19 @@
       <static>1</static>
       <include>
         <uri>model://map1</uri>
+        <pose>0.0 0.0 0.1 0.0 0.0 0.0</pose>
       </include>
     </model>
      
-    <include>
-      <pose>1.0 1.0 0.01 0.0 0.0 0.0</pose>
+    <!-- <include>
+      <name>robot1</name>
+      <namespace>robot1</namespace>
+      <pose>1.0 1.0 0.11 0.0 0.0 0.0</pose>
       <uri>model://turtlebot3_burger</uri>
-    </include>
+    </include> -->
 
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
   </world>
 </sdf>

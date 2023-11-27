@@ -32,7 +32,7 @@ TURTLEBOT3_MODEL = os.environ['TURTLEBOT3_MODEL']
 def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time', default='True')
     map_name = LaunchConfiguration('map_name', default='map1')
-    world_file_name = 'map1.world.xml'
+    world_file_name = 'map2.world.xml'
     world = os.path.join(get_package_share_directory('explorer_gazebo'),
                          'worlds', world_file_name)
     gazebo_launch_file_dir = os.path.join(get_package_share_directory('turtlebot3_gazebo'), 'launch')
@@ -41,6 +41,7 @@ def generate_launch_description():
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
 
     return LaunchDescription([
+        # 启动Gazebo 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                 os.path.join(pkg_gazebo_ros, 'launch', 'gzserver.launch.py')
@@ -54,15 +55,16 @@ def generate_launch_description():
             ),
         ),
 
-        ExecuteProcess(
-            cmd=['ros2', 'param', 'set', '/gazebo', 'use_sim_time', use_sim_time],
-            output='screen'),
+        # ExecuteProcess(
+        #     cmd=['ros2', 'param', 'set', '/gazebo', 'use_sim_time', use_sim_time],
+        #     output='screen'),
 
+        # 启动robot_state_publisher，导入小车的model
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([gazebo_launch_file_dir, '/robot_state_publisher.launch.py']),
             launch_arguments={'use_sim_time': use_sim_time}.items(),
         ),
-
+        # 启动rviz，cartographer相关nodes
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([cartographer_launch_file_dir, '/cartographer.launch.py']),
             launch_arguments={'use_sim_time': use_sim_time}.items(),
